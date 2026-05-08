@@ -1,0 +1,1 @@
+# swagger-typescript-adonis-node-mongo
