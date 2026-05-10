@@ -7,6 +7,7 @@ router.get('/api/v1/health', async () => {
 // We will import module routes here
 import '#app/modules/auth/auth.routes'
 import '#app/modules/users/users.routes'
+import '#app/modules/products/products.routes'
 
 const DocsController = () => import('#app/controllers/docs.controller')
 
