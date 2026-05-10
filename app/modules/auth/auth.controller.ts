@@ -24,6 +24,19 @@ const refreshValidator = vine.compile(
   })
 )
 
+const forgotPasswordValidator = vine.compile(
+  vine.object({
+    email: vine.string().email(),
+  })
+)
+
+const resetPasswordValidator = vine.compile(
+  vine.object({
+    token: vine.string(),
+    newPassword: vine.string().minLength(6),
+  })
+)
+
 export default class AuthController {
   private authService = new AuthService()
 
@@ -67,13 +80,26 @@ export default class AuthController {
     return response.ok({ status: 'success', message: 'Logged out successfully' })
   }
 
-  async forgotPassword({ response }: HttpContext) {
-    // Implementation for forgot password
+  async forgotPassword({ request, response }: HttpContext) {
+    const { email } = await request.validateUsing(forgotPasswordValidator)
+    const result = await this.authService.forgotPassword(email)
+    
+    if (!result.success) {
+      // In production, we might want to return success anyway to prevent email enumeration
+      return response.badRequest({ status: 'error', message: result.message })
+    }
+    
     return response.ok({ status: 'success', message: 'Password reset link sent' })
   }
 
-  async resetPassword({ response }: HttpContext) {
-    // Implementation for reset password
+  async resetPassword({ request, response }: HttpContext) {
+    const { token, newPassword } = await request.validateUsing(resetPasswordValidator)
+    const result = await this.authService.resetPassword(token, newPassword)
+    
+    if (!result.success) {
+      return response.badRequest({ status: 'error', message: result.message })
+    }
+    
     return response.ok({ status: 'success', message: 'Password reset successfully' })
   }
 }
