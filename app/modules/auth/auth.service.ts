@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import env from '#start/env'
 import crypto from 'crypto'
+import { EmailService } from '#app/modules/email/email.service'
 
 export class AuthService {
   async register(data: any) {
@@ -80,6 +81,56 @@ export class AuthService {
   async logout(userId: string) {
     await User.findByIdAndUpdate(userId, { refreshToken: null })
     return true
+  }
+
+  async forgotPassword(email: string) {
+    const user = await User.findOne({ email })
+    if (!user) {
+      return { success: false, message: 'User not found' }
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex')
+    const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex')
+
+    user.resetPasswordToken = resetTokenHash
+    user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+    await user.save()
+
+    const emailService = new EmailService()
+    const emailSent = await emailService.sendPasswordResetEmail(user.email, resetToken)
+
+    if (!emailSent) {
+      user.resetPasswordToken = undefined
+      user.resetPasswordExpires = undefined
+      await user.save()
+      return { success: false, message: 'Could not send reset email' }
+    }
+
+    return { success: true }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
+    const user = await User.findOne({
+      resetPasswordToken: resetTokenHash,
+      resetPasswordExpires: { $gt: new Date() },
+    })
+
+    if (!user) {
+      return { success: false, message: 'Invalid or expired password reset token' }
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    user.passwordHash = await bcrypt.hash(newPassword, salt)
+    
+    // Clear reset token fields
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpires = undefined
+    
+    await user.save()
+
+    return { success: true }
   }
 
   private generateTokens(userId: string) {
