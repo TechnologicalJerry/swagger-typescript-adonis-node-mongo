@@ -88,6 +88,56 @@
         }
       }
     },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Request password reset",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" }
+                },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Reset password",
+        "tags": ["Auth"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" },
+                  "newPassword": { "type": "string" }
+                },
+                "required": ["token", "newPassword"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Success" },
+          "400": { "description": "Bad Request" }
+        }
+      }
+    },
     "/users": {
       "get": {
         "summary": "Get all users",

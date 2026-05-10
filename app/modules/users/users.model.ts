@@ -8,6 +8,8 @@ export interface UserDocument extends Document {
   role: 'user' | 'admin'
   avatar?: string
   refreshToken?: string
+  resetPasswordToken?: string
+  resetPasswordExpires?: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -44,6 +46,14 @@ const userSchema = new Schema<UserDocument>(
     },
     refreshToken: {
       type: String,
+      required: false,
+    },
+    resetPasswordToken: {
+      type: String,
+      required: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
       required: false,
     },
   },
