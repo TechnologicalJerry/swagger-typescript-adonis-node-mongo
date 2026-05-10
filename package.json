@@ -24,14 +24,15 @@
     "@adonisjs/logger": "^3.0.0",
     "@vinejs/vine": "^2.0.0",
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "edge.js": "^6.0.2",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
-    "reflect-metadata": "^0.2.2",
-    "swagger-ui-dist": "^5.17.14",
-    "express": "^4.19.2",
+    "nodemailer": "^8.0.7",
     "pino": "^9.0.0",
-    "dotenv": "^16.4.5"
+    "reflect-metadata": "^0.2.2",
+    "swagger-ui-dist": "^5.17.14"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.5.0",
